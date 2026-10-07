@@ -14,7 +14,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
@@ -46,7 +45,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     String username = tokenProvider.extractUsername(token);
                     UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
-                    // 🔍 DEBUG STEP 2: Log the User and Authorities found
                     System.out.println("--- FILTER SUCCESS --- Authenticated User: " + username);
                     System.out.println("--- FILTER SUCCESS --- Roles found: " + userDetails.getAuthorities());
 
@@ -54,7 +52,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                             new UsernamePasswordAuthenticationToken(
                                     userDetails,
                                     null,
-                                    userDetails.getAuthorities() // Uses Roles from Database
+                                    userDetails.getAuthorities()
                             );
 
                     auth.setDetails(new WebAuthenticationDetailsSource().buildDetails(req));

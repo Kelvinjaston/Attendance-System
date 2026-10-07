@@ -30,6 +30,7 @@ public class SecurityConfig {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
+
         return new BCryptPasswordEncoder();
     }
 
@@ -72,13 +73,14 @@ public class SecurityConfig {
                         .requestMatchers("/api/auth/login", "/api/v1/auth/signup").permitAll()
                         .requestMatchers("/api/registration/student").permitAll()
 
-                        .requestMatchers("/api/registration/admin").hasAuthority("ADMIN")
-                        .requestMatchers("/api/registration/lecturer").hasAuthority("ADMIN")
-                        .requestMatchers("/api/courses/**").hasAuthority("ADMIN")
+                        .requestMatchers("/api/registration/admin").permitAll()
+                        .requestMatchers("/api/registration/lecturer").permitAll()
+                        .requestMatchers("/api/courses/register").hasAuthority("ADMIN")
+                        .requestMatchers("/api/courses/all").hasAnyAuthority("ADMIN", "STUDENT", "LECTURER")
+                        .requestMatchers("/api/courses/*/enroll/*").hasAuthority("STUDENT")
 
                         .requestMatchers("/api/attendance/checking").hasAuthority("STUDENT")
-                        .requestMatchers("/api/reports/**")
-                        .hasAnyAuthority("ADMIN", "LECTURER", "STUDENT")
+                        .requestMatchers("/api/reports/**").hasAnyAuthority("ADMIN", "LECTURER", "STUDENT")
 
                         .anyRequest().authenticated()
                 );

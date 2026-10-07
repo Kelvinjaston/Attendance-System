@@ -9,4 +9,5 @@ public interface LecturerRepository extends JpaRepository<Lecturer,Long> {
     Optional<Lecturer> findByStaffId(String staffId);
 
     Optional<Lecturer> findByUser_UserId(Long userId);
+    Optional<Lecturer> findByUser_Username(String username);
 }

@@ -12,4 +12,6 @@ public interface CourseRepository extends JpaRepository<Course,Long> {
     List<Course> findByLecturer_StaffId(String staffId);
 
     Optional<Course> findByLecturer_StaffIdAndCourseCode(String staffId, String courseCode);
+
+    List<Course> findByStudents_MatricNumber(String matricNumber);
 }

@@ -1,6 +1,7 @@
 package com.project.attendance.system.controller;
 
 import com.project.attendance.system.dto.AttendanceRequest;
+import com.project.attendance.system.models.Attendance;
 import com.project.attendance.system.service.AttendanceService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +9,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import java.security.Principal;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/attendance")
@@ -19,18 +23,31 @@ public class AttendanceController {
 
     @PreAuthorize("hasAuthority('STUDENT')")
     @PostMapping("/checking")
-    public ResponseEntity<?> processAttendance(@Valid @RequestBody AttendanceRequest request) {
+    public ResponseEntity<?> processAttendance(@Valid @RequestBody AttendanceRequest request, Principal principal) {
         try {
+
+            String authenticatedMatric = principal.getName();
+            request.setMatricNumber(authenticatedMatric);
+
             String result = attendanceService.processCheckIn(request);
 
-            if (result.startsWith("SUCCESS"))
+            if (result.startsWith("SUCCESS")) {
                 return ResponseEntity.ok(result);
+            }
 
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
 
         } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Error processing attendance: " + e.getMessage());
         }
+    }
+
+    @GetMapping("/live/{courseCode}")
+    @PreAuthorize("hasAnyAuthority('LECTURER', 'ADMIN')")
+    public ResponseEntity<List<Attendance>> getLiveList(@PathVariable String courseCode) {
+        List<Attendance> list = attendanceService.getLiveAttendanceRecords(courseCode);
+        return ResponseEntity.ok(list);
     }
 }

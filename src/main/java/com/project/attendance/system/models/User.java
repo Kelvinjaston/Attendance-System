@@ -30,12 +30,10 @@ public class User {
     @Column(nullable = false)
     private String email;
 
-
+    @Column(name = "first_name")
     private String firstName;
-
+    @Column(name = "last_name")
     private String lastName;
-
-    private String department;
 
     @Column(columnDefinition = "TEXT")
     private String fingerprintTemplateBase64;
@@ -50,6 +48,20 @@ public class User {
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
     private Set<Role> roles = new HashSet<>();
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    private Student student;
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    private Lecturer lecturer;
+
+
 
 
 }

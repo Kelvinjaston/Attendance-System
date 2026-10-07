@@ -24,39 +24,40 @@ public class LecturerController {
     @PreAuthorize("hasAuthority('LECTURER')")
     @GetMapping("/courses")
     public ResponseEntity<List<CourseRegistrationRequest>> getAssignedCourses(Authentication authentication) {
-
-        String staffId = authentication.getName();
-
         try {
-            List<CourseRegistrationRequest> courses = lecturerService.findCoursesByStaffId(staffId);
+            String username = authentication.getName();
+
+            List<CourseRegistrationRequest> courses = lecturerService.findCoursesByUsername(username);
 
             return ResponseEntity.ok(courses);
-
         } catch (Exception e) {
-            System.err.println("Error fetching courses for staffId " + staffId + ": " + e.getMessage());
-            return ResponseEntity.internalServerError().body(null);
+            System.err.println(" Error fetching courses for lecturer: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+
     @PreAuthorize("hasAuthority('LECTURER')")
     @GetMapping("/courses/{courseCode}")
     public ResponseEntity<?> getCourseDetails(
             Authentication authentication,
-            @PathVariable String courseCode) { // Captures the course code from the URL
-
-        String staffId = authentication.getName();
+            @PathVariable String courseCode) {
 
         try {
-            Optional<Course> courseDetails = lecturerService.findCourseDetailsByStaffIdAndCourseCode(staffId, courseCode);
+            String username = authentication.getName();
+
+            Optional<Course> courseDetails = lecturerService.findCourseDetailsByUsernameAndCourseCode(username, courseCode);
 
             if (courseDetails.isPresent()) {
                 return ResponseEntity.ok(courseDetails.get());
             } else {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Course " + courseCode + " not found or not assigned to this lecturer.");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body("Course " + courseCode + " was not found or is not assigned to your account.");
             }
 
         } catch (Exception e) {
-            System.err.println("Error fetching details for course " + courseCode + ": " + e.getMessage());
-            return ResponseEntity.internalServerError().body("Error retrieving course details.");
+            System.err.println(" Error fetching details for " + courseCode + ": " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("An error occurred while retrieving course details.");
         }
     }
 }

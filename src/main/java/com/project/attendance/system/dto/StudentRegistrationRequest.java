@@ -1,5 +1,6 @@
 package com.project.attendance.system.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -26,7 +27,7 @@ public class StudentRegistrationRequest {
 
     @Email(message = "Invalid email format.")
     private String email;
-
+    @JsonProperty("fingerprintHash")
     @NotBlank(message = "Fingerprint template is required (Base64 string).")
     private String fingerprintTemplateBase64;
 }
